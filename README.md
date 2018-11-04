@@ -7,3 +7,4 @@ Fun Fact : The "Magna" in MagnaTalk means Génial (Awesome) in Latin
 - JQuery (https://github.com/jquery/jquery or the official website)
 - js-cookie (https://github.com/js-cookie/js-cookie)
 - underscore.js (https://underscorejs.org/)
+- JDenticon (https://jdenticon.com/)
