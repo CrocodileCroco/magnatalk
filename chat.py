@@ -1,5 +1,5 @@
 from flask import Flask, request
-chat = Flask(__name__)
+chat = Flask(__name__, static_url_path="", static_folder="static")
 import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -21,6 +21,7 @@ body{font-family: 'Roboto', sans-serif;}
 </style>
 </head><body>
 	<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/jdenticon@2.1.0" async></script>
 	<script>
 	if (Cookies.get('totalmsg') == null) {
 		Cookies.set('totalmsg', 0)
@@ -30,6 +31,8 @@ body{font-family: 'Roboto', sans-serif;}
 	<div class="totalmsge">0</div> messages envoyé par vous
 	<input id="mychat" placeholder="Type message and press enter"/>
 	<div id="chat"></div>
+	<br>
+	<div class="tempidenti"></div>
 	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
 	<script>
@@ -38,6 +41,7 @@ body{font-family: 'Roboto', sans-serif;}
 	<script>
 	var username = prompt("Enter your name | Entrez votre nom")
 	username = _.escape(username)
+	$( "div.tempidenti" ).replaceWith( "<svg data-jdenticon-value='" + username + "' width='80' height='80'>ERREUR Votre Navigateur ne supporte pas les SVG.</svg>" );
 	</script>
 	<script>
 	var grosmots = ['connard', 'C0NNAR', 'pute', 'merde', 'enkuler', 'enculer']
@@ -46,6 +50,8 @@ body{font-family: 'Roboto', sans-serif;}
 			if (grosmots.indexOf($('#mychat').val()) >= 0) {
 				alert("Gros mot détecté, veuillez ne pas écrire de gros mots");
 				return;
+			} else if ($('#mychat').val() == "" || $('#mychat').val() == null) {
+				alert("Veuillez ne pas envoyer de messages vides")
 			} else {
 				$.get('/send',{msg:_.escape($('#mychat').val()), usernem:username});
 				$('#mychat').val('');
@@ -82,6 +88,9 @@ def send():
 	flmsg = flmsg.replace("NON", "<b>NON</b>")
 	flmsg = flmsg.replace("PUTAIN DE MERDE", "<div class='shake shake-constant'>PUTAIN DE MERDE</div>")
 	flmsg = flmsg.replace("TRIGGERED", "<div class='shake-crazy shake-constant'><font color='red'><b>TRIGGERED</b></font></div>")
+	flmsg = flmsg.replace("PogChamp", "<img src='https://static-cdn.jtvnw.net/emoticons/v1/88/1.0'>")
+	flmsg = flmsg.replace("PogCrazy", "<div class='shake shake-constant'><img src='https://static-cdn.jtvnw.net/emoticons/v1/88/1.0'></div>")
+	flmsg = flmsg.replace("SP33Dboi", "<img src='/speedboi.png'>")
 	#msgs.append('%s:%s' % (request.remote_addr, request.args['msg']))
 	msgs.append('<b>%s</b> : %s' % (request.args['usernem'], flmsg))
 	print(request.remote_addr + " | " + request.args['usernem'] + " : " + request.args['msg'])
