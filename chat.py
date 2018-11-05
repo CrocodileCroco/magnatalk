@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 chat = Flask(__name__, static_url_path="", static_folder="static")
 import logging
 log = logging.getLogger('werkzeug')
@@ -9,16 +9,20 @@ import re
 html = """
 <html><head>
 <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-<link rel="stylesheet" type="text/css" href="https://csshake.surge.sh/csshake.min.css"> 
+<link rel="stylesheet" type="text/css" href="https://csshake.surge.sh/csshake.min.css">
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/1.4.0/css/perfect-scrollbar.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/1.4.0/perfect-scrollbar.min.js"></script>
 <style>
-#mychat{width:100%; font-size: 15px; padding: 10px; border: 1px solid #111111;}
+#mychat{width:100%; font-size: 15px; padding: 10px; border: 1px solid #111111; background-color:#2c2f33; color:white;}
 </style>
 <style>
 #chat{height:500px; word-wrap:break-word; overflow: scroll;}
 </style>
 <style>
-body{font-family: 'Roboto', sans-serif;}
+body{font-family: 'Roboto', sans-serif; background-color:#2c2f33; color:white;}
 </style>
+
 </head><body>
 	<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/jdenticon@2.1.0" async></script>
@@ -31,9 +35,12 @@ body{font-family: 'Roboto', sans-serif;}
 	<div class="totalmsge">0</div> messages envoyé par vous
 	<input id="mychat" placeholder="Type message and press enter"/>
 	<div id="chat"></div>
+	<script>
+	const ps = new PerfectScrollbar('#chat');
+	</script>
 	<br>
 	<div class="tempidenti"></div>
-	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+	
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
 	<script>
 	$("div.totalmsge").replaceWith('<div class=\"totalmsge\">' + Cookies.get('totalmsg') + '</div>')
@@ -77,10 +84,15 @@ body{font-family: 'Roboto', sans-serif;}
 </body></html>
 """
 
+
+
 msgs = []
 
 @chat.route('/')
 def index():return html
+
+@chat.route('/help')
+def help():return render_template('helpme.html')
 
 @chat.route('/send')
 def send():
@@ -91,6 +103,8 @@ def send():
 	flmsg = flmsg.replace("PogChamp", "<img src='https://static-cdn.jtvnw.net/emoticons/v1/88/1.0'>")
 	flmsg = flmsg.replace("PogCrazy", "<div class='shake shake-constant'><img src='https://static-cdn.jtvnw.net/emoticons/v1/88/1.0'></div>")
 	flmsg = flmsg.replace("SP33Dboi", "<img src='/speedboi.png'>")
+	if flmsg.startswith('>') or flmsg.startswith('&gt;') or flmsg.startswith("&#x3e;'") :
+		flmsg = "<font color='#789922'>" + flmsg + "</font>"
 	#msgs.append('%s:%s' % (request.remote_addr, request.args['msg']))
 	msgs.append('<b>%s</b> : %s' % (request.args['usernem'], flmsg))
 	print(request.remote_addr + " | " + request.args['usernem'] + " : " + request.args['msg'])
